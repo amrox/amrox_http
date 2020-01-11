@@ -1,5 +1,4 @@
 [requires]
-#poco/1.9.4
 docopt/0.6.2@conan/stable
 boost/1.71.0
 zmq/4.3.2@bincrafters/stable
