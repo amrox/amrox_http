@@ -10,7 +10,7 @@ So far, it's just a command line program that will echo back to you.
  - [x] Echo server
  - [ ] Test harness
  - [ ] Dockerize build
- - [ ] Actual HTTP protcol
+ - [ ] Actual HTTP protocol
 
 ## Quick start
 
