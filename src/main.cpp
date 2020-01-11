@@ -1,8 +1,6 @@
 #include <iostream>
 
-#include <boost/asio.hpp>
 #include <boost/filesystem.hpp>
-#include <zmq.h>
 #include <docopt.h>
 #include <spdlog/spdlog.h>
 

@@ -1,8 +1,7 @@
 [requires]
 docopt/0.6.2@conan/stable
-boost/1.71.0
-zmq/4.3.2@bincrafters/stable
 spdlog/1.4.2
+boost/1.71.0
 
 [generators]
 cmake
