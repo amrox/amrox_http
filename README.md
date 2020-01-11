@@ -40,6 +40,7 @@ Build system:
 
 Libraries:
 
+ - [docopt](https://github.com/docopt/docopt.cpp)
  - [Boost ASIO](https://www.boost.org/doc/libs/1_72_0/doc/html/boost_asio.html)
  - [Boost Filesystem](https://www.boost.org/doc/libs/1_72_0/libs/filesystem/doc/reference.html)
  - [fmt](https://github.com/fmtlib/fmt)
