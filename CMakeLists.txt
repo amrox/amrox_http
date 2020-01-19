@@ -11,14 +11,15 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include(${CMAKE_BINARY_DIR}/conan_paths.cmake)
 
 find_package(Boost 1.71.0 REQUIRED COMPONENTS filesystem)
-find_package(docopt)
-find_package(spdlog)
+find_package(docopt.cpp REQUIRED)
+find_package(spdlog REQUIRED)
+find_package(fmt REQUIRED)
 
 add_executable(amrox_http src/main.cpp)
 target_link_libraries(amrox_http
         PRIVATE
         Boost::Boost
-        docopt::docopt
+        docopt.cpp::docopt.cpp
         spdlog::spdlog)
 
 option(PACKAGE_TESTS "Build the tests" ON)

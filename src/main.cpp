@@ -2,7 +2,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/filesystem.hpp>
-#include <docopt.h>
+#include <docopt/docopt.h>
 #include <spdlog/spdlog.h>
 
 #include "server.hpp"
