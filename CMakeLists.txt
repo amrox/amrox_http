@@ -15,7 +15,9 @@ find_package(docopt.cpp REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(fmt REQUIRED)
 
-add_executable(amrox_http src/main.cpp)
+#add_library(amrox_http)
+
+add_executable(amrox_http src/main.cpp src/request.hpp)
 target_link_libraries(amrox_http
         PRIVATE
         Boost::Boost

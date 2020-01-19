@@ -2,6 +2,8 @@
 
 #include <boost/asio.hpp>
 
+#include "request.hpp"
+
 // Largely copied from https://www.boost.org/doc/libs/1_72_0/doc/html/boost_asio/example/cpp11/echo/async_tcp_echo_server.cpp
 
 namespace amrox::http_server

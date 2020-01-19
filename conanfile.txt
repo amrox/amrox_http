@@ -1,5 +1,4 @@
 [requires]
-#docopt/0.6.2@conan/stable
 docopt.cpp/0.6.2
 spdlog/1.4.2
 boost/1.71.0
