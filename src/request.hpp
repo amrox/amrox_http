@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include <iostream>
+
 namespace amrox::http_server {
 
     template<unsigned>
@@ -32,12 +34,15 @@ namespace amrox::http_server {
                 const std::string &location,
                 const std::string &httpVersion,
                 const std::map<std::string, std::string> &headers,
-                const std::vector<uint8_t> &body) :
-                request_method_(requestMethod),
-                location_(location),
-                http_version_(httpVersion),
-                headers_(std::make_shared<std::map<std::string, std::string>>(headers)),
-                body_(std::make_shared<std::vector<uint8_t>>(body)) {}
+                const std::vector<uint8_t> &body)
+                : request_method_(requestMethod),
+                  location_(location),
+                  http_version_(httpVersion),
+                  headers_(std::make_shared<std::map<std::string, std::string>>(headers)),
+                  body_(std::make_shared<std::vector<uint8_t>>(body)) {
+
+            // std::cout << "calling regular constructor" << std::endl;
+        }
 
         auto method() const -> RequestMethod {
             return request_method_;
@@ -59,11 +64,9 @@ namespace amrox::http_server {
             return body_;
         }
 
-        // TODO: check if this is working (moving, not copying) as intended
-        template<unsigned T>
-        Request( RequestBuilderTemplate<T> in ) : Request { in.build() }{ }
-
     private:
+
+        Request();
 
         RequestMethod request_method_;
         std::string location_;
@@ -81,7 +84,9 @@ namespace amrox::http_server {
             enum {
                 RequestMethod = (1 << 0),
                 Location = (1 << 1),
-                HttpVersion = (1 << 2)
+                HttpVersion = (1 << 2),
+                Headers= (1 << 3),
+                Body = (1 << 4),
             };
         };
 
@@ -90,32 +95,55 @@ namespace amrox::http_server {
         }
 
         RequestBuilderTemplate<CurrentSet | BuildBits::RequestMethod> method(amrox::http_server::RequestMethod method) {
-            RequestBuilderTemplate nextBuilder = *this;
+            RequestBuilderTemplate nextBuilder = std::move(*this);
             nextBuilder.request_method_ = method;
             return nextBuilder;
         }
 
         RequestBuilderTemplate<CurrentSet | BuildBits::HttpVersion> http_version(const std::string &http_version) {
-            RequestBuilderTemplate nextBuilder = *this;
-            nextBuilder.http_version_ = std::move(http_version);
+            RequestBuilderTemplate nextBuilder = std::move(*this);
+            nextBuilder.http_version_ = http_version;
             return nextBuilder;
         }
 
         RequestBuilderTemplate<CurrentSet | BuildBits::Location> location(const std::string &loc) {
-            RequestBuilderTemplate nextBuilder = *this;
-            nextBuilder.location_ = std::move(loc);
+            RequestBuilderTemplate nextBuilder = std::move(*this);
+            nextBuilder.location_ = loc;
             return nextBuilder;
         }
 
-        // TODO: header and body methods
+        RequestBuilderTemplate<CurrentSet | BuildBits::Headers> headers(const std::map<std::string, std::string> &headers) {
+            RequestBuilderTemplate nextBuilder = std::move(*this);
+            nextBuilder.headers_ = headers;
+            return nextBuilder;
+        }
 
+        RequestBuilderTemplate<CurrentSet | BuildBits::Body> body(const std::vector<uint8_t > &body) {
+            RequestBuilderTemplate nextBuilder = std::move(*this);
+            nextBuilder.body_ = body_;
+            return nextBuilder;
+        }
 
-        // TODO: make this work
-//        explicit operator Request&&() {
-//            return build();
-//        }
+        operator Request&&() {
+            return build();
+        }
 
-        // TODO: move to private?
+        // No Copy
+
+       RequestBuilderTemplate( RequestBuilderTemplate &) = delete;
+
+        template<unsigned OtherSet>
+        RequestBuilderTemplate  & operator= ( const RequestBuilderTemplate<OtherSet> &other ) = delete;
+
+    private:
+
+        template<unsigned OtherSet>
+        RequestBuilderTemplate(const RequestBuilderTemplate<OtherSet> &&other) noexcept
+                : request_method_ { other.request_method_ },
+                  location_ { other.location_ },
+                  http_version_ { other.http_version_ }
+        {};
+
         Request&& build() {
             constexpr auto required_fields{
                     BuildBits::RequestMethod |
@@ -127,15 +155,7 @@ namespace amrox::http_server {
             return std::move( Request {request_method_, location_, http_version_, headers_, body_} );
         }
 
-    private:
-        template<unsigned OtherSet>
-        RequestBuilderTemplate(const RequestBuilderTemplate<OtherSet> &cpy) {
-            request_method_ = cpy.request_method_;
-            location_ = cpy.location_;
-            http_version_ = cpy.http_version_;
-        }
-
-        amrox::http_server::RequestMethod request_method_;
+        RequestMethod request_method_;
         std::string location_;
         std::string http_version_;
 

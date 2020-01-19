@@ -30,15 +30,22 @@ TEST(RequestTests, BuildRequest) {
 
 TEST(RequestTests, Builder) {
 
+    const std::map<std::string, std::string> headers
+            { {"host",  "mrox.co"} };
+    const std::vector<uint8_t> body { '1' };
+
     Request req1 = RequestBuilder()
             .method(RequestMethod::GET)
             .location("/")
-            .http_version("HTTP/1.1");
+            .http_version("HTTP/1.1")
+            .headers(headers);
 
     Request req2 = Request::make()
             .method(RequestMethod::GET)
             .http_version("HTTP/1.1")
-            .location("/");
+            .location("/")
+            .headers(headers)
+            .body(body);
 
     EXPECT_EQ(req1.method(), RequestMethod::GET);
     EXPECT_EQ(req2.method(), RequestMethod::GET);
@@ -52,4 +59,9 @@ TEST(RequestTests, Builder) {
     EXPECT_EQ(req2.http_version(), "HTTP/1.1");
     EXPECT_EQ(req1.http_version(), req2.http_version());
 
+    EXPECT_EQ(*req1.headers().get(), headers);
+    EXPECT_TRUE(req1.body().get()->empty());
+
+    EXPECT_TRUE(req2.headers().get()->empty());
+    EXPECT_EQ(*req2.body().get(), body);
 }
