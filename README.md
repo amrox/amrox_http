@@ -8,7 +8,7 @@ So far, it's just a command line program that will echo back to you.
 
  - [x] Command line parsing
  - [x] Echo server
- - [ ] Test harness
+ - [x] Test harness
  - [ ] Dockerize build
  - [ ] Actual HTTP protocol
 
