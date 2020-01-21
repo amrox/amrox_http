@@ -35,20 +35,6 @@ namespace amrox::http_server {
 
         static RequestBuilder make();
 
-//        Request(RequestMethod requestMethod,
-//                const std::string &location,
-//                const std::string &httpVersion,
-//                const std::map<std::string, std::string> &headers,
-//                const std::vector<uint8_t> &body)
-//                : request_method_(requestMethod),
-//                  location_(location),
-//                  http_version_(httpVersion),
-//                  headers_(headers),
-//                  body_(body)
-//        {
-////             std::cout << "calling regular constructor" << std::endl;
-//        }
-
         Request(RequestMethod requestMethod,
                 std::string location,
                 std::string httpVersion,
@@ -60,9 +46,7 @@ namespace amrox::http_server {
                   headers_(std::move(headers)),
                   body_(std::move(body))
         {
-             std::cout << "calling regular constructor" << std::endl;
         }
-
 
         auto method() const -> RequestMethod {
             return request_method_;
@@ -84,34 +68,6 @@ namespace amrox::http_server {
             return body_;
         }
 
-//        template<unsigned T>
-//        Request(RequestBuilderTemplate<T> &&t)
-//                : request_method_ {},
-//                  location_ {},
-//                  http_version_ {},
-//                  headers_ {},
-//                  body_ {}
-//        {
-//            std::cout << "hurk" << std::endl;
-//            *this = t.build();
-//        }
-
-
-//        Request& operator= ( const Request&& other )
-//        {
-//            std::cout << "durk" << std::endl;
-//            if (this != &other)
-//            {
-//                request_method_ = other.request_method_;
-//                location_ = std::move(other.location_);
-//                http_version_ = std::move(other.http_version_);
-//                headers_ = std::move(other.headers_);
-//                body_ = std::move(other.body_);
-//            }
-//            return *this;
-//        }
-
-
     private:
 
         Request()=delete;
@@ -121,10 +77,6 @@ namespace amrox::http_server {
         std::string http_version_;
         std::map<std::string, std::string> headers_;
         std::vector<uint8_t> body_;
-
-        // TODO: do we want shared pointers here?
-        //std::shared_ptr<std::map<std::string, std::string>> headers_;
-        //std::shared_ptr<std::vector<uint8_t>> body_;
     };
 
     template<unsigned CurrentSet>
