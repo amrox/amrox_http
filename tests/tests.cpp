@@ -6,6 +6,8 @@
 
 #include "request.hpp"
 
+//you thought you were good until you deleted the copy constructor
+
 using amrox::http_server::Request;
 using amrox::http_server::RequestMethod;
 using amrox::http_server::RequestBuilder;
@@ -24,8 +26,10 @@ TEST(RequestTests, BuildRequest) {
     EXPECT_EQ(r.method(), request_method);
     EXPECT_EQ(r.location(), location);
     EXPECT_EQ(r.http_version(), http_version);
-    EXPECT_EQ(*r.headers().get(), headers);
-    EXPECT_TRUE((r.body()->empty()));
+//    EXPECT_EQ(*r.headers().get(), headers);
+//    EXPECT_TRUE((r.body()->empty()));
+    EXPECT_EQ(r.headers(), headers);
+    EXPECT_TRUE((r.body().empty()));
 }
 
 TEST(RequestTests, Builder) {
@@ -36,15 +40,14 @@ TEST(RequestTests, Builder) {
 
     Request req1 = RequestBuilder()
             .method(RequestMethod::GET)
-            .location("/")
             .http_version("HTTP/1.1")
+            .location("/")
             .headers(headers);
 
     Request req2 = Request::make()
             .method(RequestMethod::GET)
             .http_version("HTTP/1.1")
             .location("/")
-            .headers(headers)
             .body(body);
 
     EXPECT_EQ(req1.method(), RequestMethod::GET);
@@ -59,9 +62,19 @@ TEST(RequestTests, Builder) {
     EXPECT_EQ(req2.http_version(), "HTTP/1.1");
     EXPECT_EQ(req1.http_version(), req2.http_version());
 
-    EXPECT_EQ(*req1.headers().get(), headers);
-    EXPECT_TRUE(req1.body().get()->empty());
+    EXPECT_EQ(req1.headers(), headers);
+    EXPECT_TRUE(req1.body().empty());
 
-    EXPECT_TRUE(req2.headers().get()->empty());
-    EXPECT_EQ(*req2.body().get(), body);
+    EXPECT_TRUE(req2.headers().empty());
+    EXPECT_EQ(req2.body(), body);
 }
+
+
+//TEST(RequestTests, Parse) {
+//
+//    std::string s1 { "GET / HTTP/1.1\r\n" };
+//
+//    amrox::http_server::parse(s1.begin(), s1.end());
+//
+////    EXPECT_TRUE(false);
+//}
