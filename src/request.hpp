@@ -11,6 +11,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <map>
 
 #include <iostream>
 
@@ -196,47 +197,34 @@ namespace amrox::http_server {
 
     // -----------------------------------------
 
+    auto parse(std::vector<uint8_t>::iterator begin, std::vector<uint8_t>::iterator end) -> std::optional<Request> {
 
-    auto parse(std::vector<char>::iterator begin, std::vector<char>::iterator end) -> std::optional<Request> {
+        const std::vector<uint8_t> crlf{'\r', '\n'};
 
-        const uint8_t CRLF[] { '\r', '\n' };
+        RequestMethod request_method;
 
-//        std::string_view sv { begin, end };
-////        std::string_view sv { "hello" };
-//
-////        std::find(begin, end, CRLF);
-//        std::find(begin, end, '\r');
-
-        auto cur { begin };
-        while (cur != end) {
-            if (*cur == '\r') {
-                cur++;
-                if (*cur != '\n') {
-                    std::cerr << "got CR without LF!";
-                    return std::nullopt;
+        auto line_end = std::search(begin, end, crlf.begin(), crlf.end());
+        if (line_end != end)
+        {
+            auto it = begin;
+            while (it != line_end) {
+                if (static_cast<char>(*it) == ' ') {
+                    std::string method { begin, it };
+                    if (method == "GET") {
+                        request_method = RequestMethod::GET;
+                    } else {
+                        return std::nullopt;
+                    }
+                    break;
                 }
-
-                std::string line1 { begin, cur };
-                std::cout << line1;
-
-
-
-//                if (cur == begin) {
-//                    std::cerr << "found \\n at begining!";
-//                    return std::nullopt;
-//                }
-//
-//                if ((cur) != '\r') {
-//                    std::cerr << "got line feed without CR!";
-//                    return std::nullopt;
-//                }
-
+                it++;
             }
-
-            cur++;
         }
-
-        return std::nullopt;
+        
+        return Request::make()
+            .method(request_method)
+            .http_version("HTTP/1")
+            .location("/");
     }
 }
 
