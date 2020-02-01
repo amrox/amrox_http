@@ -18,7 +18,7 @@ TEST(RequestTests, BuildRequest) {
     const RequestMethod request_method { RequestMethod::GET };
     const std::string http_version { "HTTP/1.1" };
     const std::string location { "/ "};
-    const std::map<std::string, std::string> headers
+    const std::multimap<std::string, std::string> headers
             { {"host",  "mrox.co"} };
 
     Request r { request_method, location, http_version, headers, {} };
@@ -34,7 +34,7 @@ TEST(RequestTests, BuildRequest) {
 
 TEST(RequestTests, Builder) {
 
-    const std::map<std::string, std::string> headers
+    const std::multimap<std::string, std::string> headers
             { {"host",  "mrox.co"} };
     const std::vector<uint8_t> body { '1' };
 
@@ -72,22 +72,28 @@ TEST(RequestTests, Builder) {
 
 TEST(RequestTests, Parse1) {
 
-   std::string s1 { "GET / HTTP/1.1\r\n\r\n" };
-   std::vector<uint8_t> b1 { s1.begin(), s1.end() };
+    std::string s1 { "GET / HTTP/1.1\r\nHost: localhost:3000\r\nUser-Agent: amrox_http_tests\r\n\r\n" };
+    std::vector<uint8_t> b1 { s1.begin(), s1.end() };
 
-   auto r = amrox::http_server::parse(b1.begin(), b1.end());
+    auto r = amrox::http_server::parse(b1.begin(), b1.end());
 
-   EXPECT_EQ(r.value().method(), RequestMethod::GET);
+    EXPECT_EQ(r.value().method(), RequestMethod::GET);
+    EXPECT_EQ(r.value().location(), "/");
+    EXPECT_EQ(r.value().http_version(), "HTTP/1.1");
+    EXPECT_EQ(r.value().headers().find("Host")->second, "localhost:3000");
+    EXPECT_EQ(r.value().headers().find("User-Agent")->second, "amrox_http_tests");
+
+    // TODO: case-insentitve header support
 }
 
 TEST(RequestTests, Parse_Bad_Method) {
 
-   std::string s1 { "MERP / HTTP/1.1\r\n\r\n" };
-   std::vector<uint8_t> b1 { s1.begin(), s1.end() };
+    std::string s1 { "MERP / HTTP/1.1\r\n\r\n" };
+    std::vector<uint8_t> b1 { s1.begin(), s1.end() };
 
-   auto r = amrox::http_server::parse(b1.begin(), b1.end());
+    auto r = amrox::http_server::parse(b1.begin(), b1.end());
 
-   EXPECT_FALSE(r);
+    EXPECT_FALSE(r);
 }
 
 TEST(RequestTests, Parse_Bad_HttpVersion) {

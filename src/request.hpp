@@ -40,7 +40,7 @@ namespace amrox::http_server {
         Request(RequestMethod requestMethod,
                 std::string location,
                 std::string httpVersion,
-                std::map<std::string, std::string> headers,
+                std::multimap<std::string, std::string> headers,
                 std::vector<uint8_t> body)
                 : request_method_(requestMethod),
                   location_(std::move(location)),
@@ -62,7 +62,7 @@ namespace amrox::http_server {
             return http_version_;
         }
 
-        auto headers() const -> std::map<std::string, std::string> {
+        auto headers() const -> std::multimap<std::string, std::string> {
             return headers_;
         }
 
@@ -77,7 +77,7 @@ namespace amrox::http_server {
         RequestMethod request_method_;
         std::string location_;
         std::string http_version_;
-        std::map<std::string, std::string> headers_;
+        std::multimap<std::string, std::string> headers_;
         std::vector<uint8_t> body_;
     };
 
@@ -115,7 +115,7 @@ namespace amrox::http_server {
             return nextBuilder;
         }
 
-        RequestBuilderTemplate<CurrentSet | BuildBits::Headers> headers(const std::map<std::string, std::string> &headers) {
+        RequestBuilderTemplate<CurrentSet | BuildBits::Headers> headers(const std::multimap<std::string, std::string> &headers) {
             RequestBuilderTemplate nextBuilder = std::move(*this);
             nextBuilder.headers_ = headers;
             return nextBuilder;
@@ -182,7 +182,7 @@ namespace amrox::http_server {
         RequestMethod request_method_;
         std::string location_;
         std::string http_version_;
-        std::map<std::string, std::string> headers_;
+        std::multimap<std::string, std::string> headers_;
         std::vector<uint8_t> body_;
 
         template<unsigned>
@@ -210,19 +210,19 @@ namespace amrox::http_server {
          */
 
         // Search for 3) blank line
-        const std::vector<uint8_t> blank_line {'\r', '\n', '\r', '\n' };
-        auto meta = std::search(begin, end, blank_line.begin(), blank_line.end());
-        if (meta == end) {
+        static const std::vector<uint8_t> blank_line {'\r', '\n', '\r', '\n' };
+        const auto meta_end = std::search(begin, end, blank_line.begin(), blank_line.end());
+        if (meta_end == end) {
             return std::nullopt;
         }
 
         // Now parse 1) start-line
-        const std::vector<uint8_t> crlf {'\r', '\n'};
-        const std::regex regex1 { "([A-Z].*) (.*) ([A-Z].*\\/\\d.*)" } ;
+        static const std::vector<uint8_t> crlf {'\r', '\n'};
+        static const std::regex start_line_regex {"([A-Z].*) (.*) ([A-Z].*\\/\\d.*)" } ;
         auto start_line_end = std::search(begin, end, crlf.begin(), crlf.end());
         std::string start_line { begin, start_line_end };
         std::smatch start_line_matches;
-        std::regex_match(start_line, start_line_matches, regex1);
+        std::regex_match(start_line, start_line_matches, start_line_regex);
 
         // The first sub_match is the whole string; the next
         // sub_match is the first parenthesized expression.
@@ -256,15 +256,25 @@ namespace amrox::http_server {
             return std::nullopt;
         }
 
-        // TODO: header parsing
+        // Parse headers
+        static const std::regex header_line_regex {"([A-Za-z\\-]+):\\s*(.*)" };
+        std::string raw_headers { start_line_end + crlf.size(), meta_end };
+        auto headers_begin = std::sregex_iterator(raw_headers.begin(), raw_headers.end(), header_line_regex);
+        auto headers_end = std::sregex_iterator();
 
-        // TODO: (later) body parsing
+        std::multimap<std::string, std::string> headers;
+
+        for (std::sregex_iterator i = headers_begin; i != headers_end; ++i) {
+            std::smatch match = *i;
+            headers.insert({ match[1].str(), match[2].str() });
+        }
 
         return Request {
                 request_method,
                 location,
                 http_version,
-                {}, {}};
+                headers,
+                {}}; // TODO: (later) body parsing
     };
 }
 
