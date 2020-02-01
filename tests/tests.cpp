@@ -72,7 +72,7 @@ TEST(RequestTests, Builder) {
 
 TEST(RequestTests, Parse1) {
 
-   std::string s1 { "GET / HTTP/1.1\r\n" };
+   std::string s1 { "GET / HTTP/1.1\r\n\r\n" };
    std::vector<uint8_t> b1 { s1.begin(), s1.end() };
 
    auto r = amrox::http_server::parse(b1.begin(), b1.end());
@@ -80,12 +80,22 @@ TEST(RequestTests, Parse1) {
    EXPECT_EQ(r.value().method(), RequestMethod::GET);
 }
 
-TEST(RequestTests, Parse2) {
+TEST(RequestTests, Parse_Bad_Method) {
 
-   std::string s1 { "MERP / HTTP/1.1\r\n" };
+   std::string s1 { "MERP / HTTP/1.1\r\n\r\n" };
    std::vector<uint8_t> b1 { s1.begin(), s1.end() };
 
    auto r = amrox::http_server::parse(b1.begin(), b1.end());
 
    EXPECT_FALSE(r);
+}
+
+TEST(RequestTests, Parse_Bad_HttpVersion) {
+
+    std::string s1 { "GET /thing HTTP/1.0\r\n\r\n" };
+    std::vector<uint8_t> b1 { s1.begin(), s1.end() };
+
+    auto r = amrox::http_server::parse(b1.begin(), b1.end());
+
+    EXPECT_FALSE(r);
 }
