@@ -4,9 +4,9 @@
 
 #include <gtest/gtest.h>
 
-#include "request.hpp"
+#include <amrox_http/request.hpp>
+#include <amrox_http/request_parser.hpp>
 
-//you thought you were good until you deleted the copy constructor
 
 using amrox::http_server::Request;
 using amrox::http_server::RequestMethod;
@@ -75,7 +75,7 @@ TEST(RequestTests, Parse1) {
     std::string s1 { "GET / HTTP/1.1\r\nHost: localhost:3000\r\nUser-Agent: amrox_http_tests\r\n\r\n" };
     std::vector<uint8_t> b1 { s1.begin(), s1.end() };
 
-    auto r = amrox::http_server::parse(b1.begin(), b1.end());
+    auto r = amrox::http_server::parse_request(b1.begin(), b1.end());
 
     EXPECT_EQ(r.value().method(), RequestMethod::GET);
     EXPECT_EQ(r.value().location(), "/");
@@ -91,7 +91,7 @@ TEST(RequestTests, Parse_Bad_Method) {
     std::string s1 { "MERP / HTTP/1.1\r\n\r\n" };
     std::vector<uint8_t> b1 { s1.begin(), s1.end() };
 
-    auto r = amrox::http_server::parse(b1.begin(), b1.end());
+    auto r = amrox::http_server::parse_request(b1.begin(), b1.end());
 
     EXPECT_FALSE(r);
 }
@@ -101,7 +101,7 @@ TEST(RequestTests, Parse_Bad_HttpVersion) {
     std::string s1 { "GET /thing HTTP/1.0\r\n\r\n" };
     std::vector<uint8_t> b1 { s1.begin(), s1.end() };
 
-    auto r = amrox::http_server::parse(b1.begin(), b1.end());
+    auto r = amrox::http_server::parse_request(b1.begin(), b1.end());
 
     EXPECT_FALSE(r);
 }

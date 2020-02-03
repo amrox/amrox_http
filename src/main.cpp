@@ -5,7 +5,7 @@
 #include <docopt/docopt.h>
 #include <spdlog/spdlog.h>
 
-#include "server.hpp"
+#include "amrox_http/server.hpp"
 
 namespace bf = boost::filesystem;
 

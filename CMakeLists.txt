@@ -15,14 +15,40 @@ find_package(docopt.cpp REQUIRED)
 find_package(spdlog REQUIRED)
 find_package(fmt REQUIRED)
 
-#add_library(amrox_http)
+add_library(amrox_http_lib
+        src/request.cpp
+        src/request_parser.cpp)
 
-add_executable(amrox_http src/main.cpp src/request.hpp)
+
+target_include_directories(amrox_http_lib
+        PUBLIC
+        $<INSTALL_INTERFACE:include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/src
+        ${CMAKE_CURRENT_BINARY_DIR}/gen-private-include
+)
+
+#target_include_directories(amrox_http_lib
+#        PUBLIC
+#        ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+target_link_libraries(amrox_http_lib
+        PUBLIC
+        Boost::Boost
+        spdlog::spdlog)
+
+#set_target_properties(amrox_http_lib
+#        PROPERTIES
+#        INTERFACE_INCLUDE_DIRECTORIES include)
+
+add_executable(amrox_http
+        src/main.cpp)
+
 target_link_libraries(amrox_http
         PRIVATE
-        Boost::Boost
         docopt.cpp::docopt.cpp
-        spdlog::spdlog)
+        amrox_http_lib)
 
 option(PACKAGE_TESTS "Build the tests" ON)
 if(PACKAGE_TESTS)
