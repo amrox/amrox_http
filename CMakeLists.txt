@@ -29,18 +29,10 @@ target_include_directories(amrox_http_lib
         ${CMAKE_CURRENT_BINARY_DIR}/gen-private-include
 )
 
-#target_include_directories(amrox_http_lib
-#        PUBLIC
-#        ${CMAKE_CURRENT_SOURCE_DIR}/include)
-
 target_link_libraries(amrox_http_lib
         PUBLIC
         Boost::Boost
         spdlog::spdlog)
-
-#set_target_properties(amrox_http_lib
-#        PROPERTIES
-#        INTERFACE_INCLUDE_DIRECTORIES include)
 
 add_executable(amrox_http
         src/main.cpp)
