@@ -16,7 +16,7 @@ find_package(spdlog REQUIRED)
 find_package(fmt REQUIRED)
 
 add_library(amrox_http_lib
-        src/request_parser.cpp)
+        src/request_parser.cpp include/amrox_http/response.hpp)
 
 
 target_include_directories(amrox_http_lib

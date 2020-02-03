@@ -5,12 +5,15 @@
 #include <gtest/gtest.h>
 
 #include <amrox_http/request.hpp>
+#include <amrox_http/response.hpp>
 #include <amrox_http/request_parser.hpp>
 
 
 using amrox::http_server::Request;
 using amrox::http_server::RequestMethod;
 using amrox::http_server::RequestBuilder;
+using amrox::http_server::Response;
+using amrox::http_server::ResponseBuilder;
 
 
 TEST(RequestTests, BuildRequest) {
@@ -26,8 +29,8 @@ TEST(RequestTests, BuildRequest) {
     EXPECT_EQ(r.method(), request_method);
     EXPECT_EQ(r.location(), location);
     EXPECT_EQ(r.http_version(), http_version);
-//    EXPECT_EQ(*r.headers().get(), headers);
-//    EXPECT_TRUE((r.body()->empty()));
+    EXPECT_EQ(r.headers(), headers);
+    EXPECT_TRUE((r.body().empty()));
     EXPECT_EQ(r.headers(), headers);
     EXPECT_TRUE((r.body().empty()));
 }
@@ -104,4 +107,53 @@ TEST(RequestTests, Parse_Bad_HttpVersion) {
     auto r = amrox::http_server::parse_request(b1.begin(), b1.end());
 
     EXPECT_FALSE(r);
+}
+
+TEST(ResponseTests, BuildResponse) {
+
+    const int status_code { 200 };
+    const std::string http_version { "HTTP/1.1" };
+    const std::multimap<std::string, std::string> headers
+            { {"host",  "mrox.co"} };
+
+    Response r { status_code, http_version, headers, {} };
+
+    EXPECT_EQ(r.status_code(), status_code);
+    EXPECT_EQ(r.http_version(), http_version);
+    EXPECT_EQ(r.headers(), headers);
+    EXPECT_TRUE((r.body().empty()));
+    EXPECT_EQ(r.headers(), headers);
+    EXPECT_TRUE((r.body().empty()));
+}
+
+
+TEST(ResponseTests, Builder) {
+
+    const std::multimap<std::string, std::string> headers
+            { {"host",  "mrox.co"} };
+    const std::vector<uint8_t> body { '1' };
+
+    Response req1 = ResponseBuilder()
+            .status_code(200)
+            .http_version("HTTP/1.1")
+            .headers(headers);
+
+    Response req2 = Response::make()
+            .status_code(200)
+            .http_version("HTTP/1.1")
+            .body(body);
+
+    EXPECT_EQ(req1.status_code(), 200);
+    EXPECT_EQ(req2.status_code(), 200);
+    EXPECT_EQ(req1.status_code(), req2.status_code());
+
+    EXPECT_EQ(req1.http_version(), "HTTP/1.1");
+    EXPECT_EQ(req2.http_version(), "HTTP/1.1");
+    EXPECT_EQ(req1.http_version(), req2.http_version());
+
+    EXPECT_EQ(req1.headers(), headers);
+    EXPECT_TRUE(req1.body().empty());
+
+    EXPECT_TRUE(req2.headers().empty());
+    EXPECT_EQ(req2.body(), body);
 }

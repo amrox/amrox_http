@@ -6,14 +6,10 @@
 #pragma once
 
 #include <cstdint>
+#include <map>
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
-#include <map>
-#include <regex>
-
-#include <iostream>
 
 namespace amrox::http_server {
 
@@ -195,3 +191,8 @@ namespace amrox::http_server {
     }
 }
 
+// NOTES:
+//   I used the build pattern here as an exercise. In practice, it's a lot of boilerplate. I'm
+//   not sure I'd do something similar in production code.
+//
+//   See 'response.hpp'
