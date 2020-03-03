@@ -21,7 +21,7 @@ auto amrox::http_server::parse_request(const std::vector<uint8_t>::const_iterato
 {
     // Search for 3) blank line
     static const std::vector<uint8_t> blank_line {'\r', '\n', '\r', '\n' };
-    const auto&& meta_end = std::search(begin, end, blank_line.cbegin(), blank_line.cend());
+    const auto meta_end = std::search(begin, end, blank_line.cbegin(), blank_line.cend());
     if (meta_end == end) {
         return std::nullopt;
     }
@@ -29,7 +29,7 @@ auto amrox::http_server::parse_request(const std::vector<uint8_t>::const_iterato
     // Now parse 1) start-line
     static const std::vector<uint8_t> crlf {'\r', '\n'};
     static const std::regex start_line_regex {"([A-Z].*) (.*) ([A-Z].*\\/\\d.*)" } ;
-    const auto&& start_line_end = std::search(begin, end, crlf.cbegin(), crlf.cend());
+    const auto start_line_end = std::search(begin, end, crlf.cbegin(), crlf.cend());
     std::string start_line { begin, start_line_end };
     std::smatch start_line_matches;
     std::regex_match(start_line, start_line_matches, start_line_regex);
@@ -46,7 +46,7 @@ auto amrox::http_server::parse_request(const std::vector<uint8_t>::const_iterato
             { "GET", RequestMethod::GET }
     };
 
-    const auto&& request_method_pos = string_to_method.find(start_line_matches[1].str());
+    const auto request_method_pos = string_to_method.find(start_line_matches[1].str());
     if (request_method_pos == string_to_method.end()) {
         return std::nullopt;
     }
@@ -69,8 +69,8 @@ auto amrox::http_server::parse_request(const std::vector<uint8_t>::const_iterato
     // Parse headers
     static const std::regex header_line_regex {"([A-Za-z\\-]+):\\s*(.*)" };
     std::string raw_headers { start_line_end + crlf.size(), meta_end };
-    const auto&& headers_begin = std::sregex_iterator(raw_headers.cbegin(), raw_headers.end(), header_line_regex);
-    const auto&& headers_end = std::sregex_iterator();
+    const auto headers_begin = std::sregex_iterator(raw_headers.cbegin(), raw_headers.end(), header_line_regex);
+    const auto headers_end = std::sregex_iterator();
 
     std::multimap<std::string, std::string> headers;
 
