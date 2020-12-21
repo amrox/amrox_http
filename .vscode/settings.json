@@ -1,0 +1,20 @@
+{
+    "C_Cpp.default.configurationProvider": "vector-of-bool.cmake-tools",
+    "files.associations": {
+        "__bit_reference": "cpp",
+        "__hash_table": "cpp",
+        "__string": "cpp",
+        "__tree": "cpp",
+        "algorithm": "cpp",
+        "hash_map": "cpp",
+        "set": "cpp",
+        "unordered_map": "cpp",
+        "map": "cpp",
+        "string": "cpp",
+        "string_view": "cpp",
+        "regex": "cpp",
+        "*.ipp": "cpp",
+        "memory": "cpp",
+        "type_traits": "cpp"
+    }
+}

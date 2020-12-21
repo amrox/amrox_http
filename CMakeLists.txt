@@ -16,6 +16,8 @@ find_package(spdlog REQUIRED)
 find_package(fmt REQUIRED)
 
 add_library(amrox_http_lib
+        src/connection.cpp
+        src/connection_manager.cpp
         src/request_parser.cpp 
         src/server.cpp
         src/session.cpp)
