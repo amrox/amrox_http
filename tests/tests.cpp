@@ -80,11 +80,11 @@ TEST(RequestTests, Parse1) {
 
     auto r = amrox::http_server::parse_request(b1.begin(), b1.end());
 
-    EXPECT_EQ(r.value().method(), RequestMethod::GET);
-    EXPECT_EQ(r.value().location(), "/");
-    EXPECT_EQ(r.value().http_version(), "HTTP/1.1");
-    EXPECT_EQ(r.value().headers().find("Host")->second, "localhost:3000");
-    EXPECT_EQ(r.value().headers().find("User-Agent")->second, "amrox_http_tests");
+    EXPECT_EQ(r->method(), RequestMethod::GET);
+    EXPECT_EQ(r->location(), "/");
+    EXPECT_EQ(r->http_version(), "HTTP/1.1");
+    EXPECT_EQ(r->headers().find("Host")->second, "localhost:3000");
+    EXPECT_EQ(r->headers().find("User-Agent")->second, "amrox_http_tests");
 
     // TODO: case-insentitve header support
 }
